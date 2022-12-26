@@ -11,25 +11,26 @@ import android.widget.TextView;
 
 import java.util.LinkedList;
 
-public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
+public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryRecyclerAdapter.CategoryViewHolder> {
+
+    // setting events
+    public interface OnCategoryClickListener{
+        void onItemClick(String category);
+    }
+
+    public void setOnCategoryClickListener(OnCategoryClickListener onCategoryClickListener) {
+        this.onCategoryClickListener = onCategoryClickListener;
+    }
 
     private LayoutInflater mInflater;
     private Context mContext;
 
     private LinkedList<CategoryResBean> cellList = GlobalUtil.getInstance().costRes;
 
-    public String getSelected() {
-        return selected;
-    }
-
     private String selected="";
-
-    public void setOnCategoryClickListener(OnCategoryClickListener onCategoryClickListener) {
-        this.onCategoryClickListener = onCategoryClickListener;
-    }
-
     private OnCategoryClickListener onCategoryClickListener;
 
+    // Constructor
     public CategoryRecyclerAdapter(Context context){
         GlobalUtil.getInstance().setContext(context);
         this.mContext = context;
@@ -37,11 +38,26 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryViewHo
         selected = cellList.get(0).title;
     }
 
+    // inner class
+    class CategoryViewHolder extends RecyclerView.ViewHolder{
+
+        RelativeLayout background;
+        ImageView imageView;
+        TextView textView;
+
+        public CategoryViewHolder(View itemView) {
+            super(itemView);
+            background = itemView.findViewById(R.id.cell_background);
+            imageView = itemView.findViewById(R.id.imageView_category);
+            textView = itemView.findViewById(R.id.textView_category);
+
+        }
+    }
+
     @Override
     public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.cell_category,parent,false);
-        CategoryViewHolder myViewHolder = new CategoryViewHolder(view);
-        return myViewHolder;
+        return new CategoryViewHolder(view);
     }
 
     @Override
@@ -49,7 +65,7 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryViewHo
         final CategoryResBean res = cellList.get(position);
         holder.imageView.setImageResource(res.resBlack);
         holder.textView.setText(res.title);
-
+        // Define setOnClickListener method
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +73,7 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryViewHo
                 notifyDataSetChanged();
 
                 if (onCategoryClickListener!=null){
-                    onCategoryClickListener.onClikc(res.title);
+                    onCategoryClickListener.onItemClick(res.title);
                 }
 
             }
@@ -72,6 +88,11 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryViewHo
 
     }
 
+    @Override
+    public int getItemCount() {
+        return cellList.size();
+    }
+
     public void changeType(RecordBean.RecordType type){
         if (type == RecordBean.RecordType.RECORD_TYPE_EXPENSE){
             cellList = GlobalUtil.getInstance().costRes;
@@ -84,27 +105,8 @@ public class CategoryRecyclerAdapter extends RecyclerView.Adapter<CategoryViewHo
 
     }
 
-    @Override
-    public int getItemCount() {
-        return cellList.size();
+    public String getSelected() {
+        return selected;
     }
 
-    public interface OnCategoryClickListener{
-        void onClikc(String category);
-    }
-
-}
-
-class CategoryViewHolder extends RecyclerView.ViewHolder{
-
-    RelativeLayout background;
-    ImageView imageView;
-    TextView textView;
-
-    public CategoryViewHolder(View itemView) {
-        super(itemView);
-        background = itemView.findViewById(R.id.cell_background);
-        imageView = itemView.findViewById(R.id.imageView_category);
-        textView = itemView.findViewById(R.id.textView_category);
-    }
 }

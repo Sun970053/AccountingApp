@@ -8,38 +8,47 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.facebook.stetho.Stetho;
 import com.robinhood.ticker.TickerUtils;
 import com.robinhood.ticker.TickerView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener{
 
     private static final String TAG ="MainActivity";
 
-    private ViewPager viewPager;
+    // ButterKnife
+    @BindView(R.id.amount_text) TickerView amountText;
+    @BindView(R.id.date_text) TextView dateText;
+    @BindView(R.id.view_pager) ViewPager viewPager;
+
     private MainViewPagerAdapter pagerAdapter;
-    private TickerView amountText;
-    private TextView dateText;
     private int currentPagerPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // connect View
+        ButterKnife.bind(this);
+
+        // database operation
+        Stetho.initializeWithDefaults(this);
+
         GlobalUtil.getInstance().setContext(getApplicationContext());
         GlobalUtil.getInstance().mainActivity = this;
         getSupportActionBar().setElevation(0);
 
-        amountText = (TickerView)findViewById(R.id.amount_text);
         amountText.setCharacterLists(TickerUtils.provideNumberList());
-        dateText=(TextView) findViewById(R.id.date_text);
-
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
         pagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
         pagerAdapter.notifyDataSetChanged();
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(this);
         viewPager.setCurrentItem(pagerAdapter.getLatsIndex());
 
+        // jump to another page (AddRecordActivity)
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

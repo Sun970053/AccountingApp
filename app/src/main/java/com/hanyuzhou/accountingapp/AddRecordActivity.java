@@ -12,11 +12,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.hanyuzhou.accountingapp.R.drawable.baseline_attach_money_24;
 
 public class AddRecordActivity extends AppCompatActivity implements View.OnClickListener, CategoryRecyclerAdapter.OnCategoryClickListener {
 
     private static String TAG = "AddRecordActivity";
+
+    // ButterKnife
+    //@BindView(R.id.editText)EditText editText;
+    //@BindView(R.id.amount_text)TextView amountText;
+    //@BindView(R.id.recyclerView)RecyclerView recyclerView;
 
     private EditText editText;
     private TextView amountText;
@@ -51,6 +59,8 @@ public class AddRecordActivity extends AppCompatActivity implements View.OnClick
 
         getSupportActionBar().setElevation(0);
 
+        // connect View
+        //ButterKnife.bind(this);
         amountText = (TextView) findViewById(R.id.textView_amount);
         editText = (EditText) findViewById(R.id.editText);
         editText.setText(remark);
@@ -60,12 +70,13 @@ public class AddRecordActivity extends AppCompatActivity implements View.OnClick
         handleDot();
         handleTypeChange();
 
+        // connect to component
         recyclerView = findViewById(R.id.recyclerView);
+        // set recyclerView as GridLayout type
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         adapter = new CategoryRecyclerAdapter(this);
+        // set adapter to recyclerView
         recyclerView.setAdapter(adapter);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        adapter.notifyDataSetChanged();
 
         adapter.setOnCategoryClickListener(this);
 
@@ -183,7 +194,7 @@ public class AddRecordActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public void onClikc(String category) {
+    public void onItemClick(String category) {
         this.category = category;
         editText.setText(category);
     }
